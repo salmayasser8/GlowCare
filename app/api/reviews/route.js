@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { addReview, getProductReviews } from "@/controllers/reviewControllers";
 export async function POST(req) {
   return addReview(req);

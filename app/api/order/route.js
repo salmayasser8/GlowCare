@@ -1,10 +1,10 @@
+export const dynamic = "force-dynamic";
 import {
   placeOrder,
   getMyOrders,
   getAllOrders,
 } from "@/controllers/orderControllers";
 import authMw from "@/middlewares/authMw";
-import { checkAdmin } from "@/utils/checkRole";
 export async function POST(req) {
   return placeOrder(req);
 }

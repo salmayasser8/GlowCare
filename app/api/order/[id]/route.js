@@ -1,5 +1,5 @@
+export const dynamic = "force-dynamic";
 import { updateOrderStatus, cancelOrder } from "@/controllers/orderControllers";
-import authMw from "@/middlewares/authMw";
 export async function PUT(req, { params }) {
   return updateOrderStatus(req, params);
 }
