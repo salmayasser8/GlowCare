@@ -14,7 +14,22 @@ export default function RootLayout({ children }) {
         {children}
         <Toaster
           position="top-center"
-          toastOptions={{ className: "customToast" }}
+          toastOptions={{
+            className: "customToast",
+            success: {
+              iconTheme: {
+                primary: "var(--primary)",
+                secondary: "var(--bg-card)",
+              },
+            },
+
+            error: {
+              iconTheme: {
+                primary: "var(--primary)",
+                secondary: "var(--bg-card)",
+              },
+            },
+          }}
         />
       </body>
     </html>

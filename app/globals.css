@@ -35,7 +35,7 @@ h3,
 h5,
 h6,
 h4,
-span,
+span:not(.stock):not(.status),
 th,
 td,
 label {
@@ -87,15 +87,31 @@ a {
 body {
   background-color: var(--bg) !important;
 }
-.badge:not(.status) {
+.badge:not(.badge.status) {
   background: var(--bg-btn) !important;
   color: var(--bg-card) !important;
   border: none !important;
   font-family: "bold";
 }
+
 .navbar {
   background-color: var(--bg-card) !important;
 }
 footer {
+  color: var(--primary) !important;
+}
+.dropdown-item:focus {
+  background-color: white !important;
+}
+.form-check-input:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+.form-check-input:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+.Toastify__toast {
+  background-color: var(--bg-card) !important;
   color: var(--primary) !important;
 }

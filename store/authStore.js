@@ -9,8 +9,14 @@ export const useAuthStore = create(
       token: null,
 
       setUser: (user) => set({ user }),
-      setToken: (token) => {
-        Cookies.set("token", token, { expires: 7 });
+      setToken: (token, rememberMe = false) => {
+        if (rememberMe) {
+          Cookies.set("token", token, { expires: 7 });
+          localStorage.setItem("rememberMe", "true");
+        } else {
+          Cookies.set("token", token);
+          localStorage.removeItem("rememberMe");
+        }
         set({ token });
       },
       logout: () => {
@@ -21,8 +27,10 @@ export const useAuthStore = create(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => {
-        // safe for SSR - returns localStorage only on client
-        if (typeof window !== "undefined") return localStorage;
+        if (typeof window !== "undefined") {
+          const rememberMe = localStorage.getItem("rememberMe");
+          return rememberMe ? localStorage : sessionStorage;
+        }
         return {
           getItem: () => null,
           setItem: () => {},

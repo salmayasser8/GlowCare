@@ -56,11 +56,11 @@ export default function AdminDashboard() {
 
   const handleToggleUser = async (id) => {
     try {
-      await api.patch(`/admin/${id}`);
-      toast.success("User status updated!");
+      const { data } = await api.patch(`/admin/${id}`);
+      toast.success(data.message);
       fetchAll();
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -192,12 +192,16 @@ export default function AdminDashboard() {
                                 </Badge>
                               </td>
                               <td className="py-3">
-                                <Badge
-                                  //   bg={u.isActive ? "success" : "red"}
-                                  className="rounded-pill"
+                                <span
+                                  style={{
+                                    backgroundColor: u.isActive
+                                      ? "var(--primary)"
+                                      : "#9B0F06",
+                                  }}
+                                  className="badge status rounded-pill "
                                 >
                                   {u.isActive ? "Active" : "Inactive"}
-                                </Badge>
+                                </span>
                               </td>
                               <td className="py-3 small text-muted">
                                 {new Date(u.createdAt).toLocaleDateString()}
@@ -382,7 +386,7 @@ export default function AdminDashboard() {
                             style={{
                               color:
                                 product.stock === 0
-                                  ? "#DC3545"
+                                  ? "#9B0F06"
                                   : product.stock < 5
                                     ? "#FFA500"
                                     : "#2D6A4F",
@@ -392,12 +396,16 @@ export default function AdminDashboard() {
                           </td>
                           <td className="py-3 small">{product.seller?.name}</td>
                           <td className="py-3">
-                            <Badge
-                              bg={product.isActive ? "success" : "secondary"}
-                              className="rounded-pill"
+                            <span
+                              style={{
+                                backgroundColor: product.isActive
+                                  ? "var(--primary)"
+                                  : "#9B0F06",
+                              }}
+                              className="badge status rounded-pill"
                             >
                               {product.isActive ? "Active" : "Hidden"}
-                            </Badge>
+                            </span>
                           </td>
                         </tr>
                       ))}

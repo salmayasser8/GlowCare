@@ -123,7 +123,7 @@ export default function Home() {
         <Row className="align-items-center">
           <Col lg={6} className="my-5">
             <span className="badge mb-3 px-3 py-2 rounded-pill fw-bold">
-              ✨ New Collection 2025
+              ✨ New Collection 2026
             </span>
 
             <motion.h1
@@ -158,13 +158,9 @@ export default function Home() {
               className="d-flex gap-3 flex-wrap"
             >
               <Link href="/products">
-                <motion.Button
-                  size="lg"
-                  className="rounded-pill px-4"
-                  whileTap={{ scale: 0.95 }}
-                >
+                <Button size="lg" className="rounded-pill px-4">
                   Shop Now <FiArrowRight className="ms-2" />
-                </motion.Button>
+                </Button>
               </Link>
               {!token && (
                 <Link href="/register">

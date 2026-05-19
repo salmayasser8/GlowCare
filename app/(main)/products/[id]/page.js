@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Row, Col, Card, Button, Form, Spinner } from "react-bootstrap";
 import { Riple } from "react-loading-indicators";
 import { motion } from "framer-motion";
 import {
@@ -205,7 +205,7 @@ export default function ProductPage() {
                   fill={star <= product.ratings?.average ? "#FFC107" : "none"}
                 />
               ))}
-              <span className="text-muted small">
+              <span className="small">
                 {product.ratings?.average || 0} ({product.ratings?.count || 0}{" "}
                 reviews)
               </span>
@@ -218,8 +218,9 @@ export default function ProductPage() {
             {/* Stock */}
             <div className="mb-4">
               <span
-                className="small"
+                className=" stock small"
                 style={{
+                  fontWeight: "bold",
                   color:
                     product.stock === 0
                       ? "#DC3545"
@@ -232,7 +233,7 @@ export default function ProductPage() {
                   ? "Out of stock"
                   : product.stock < 5
                     ? `Only ${product.stock} left!`
-                    : `✓ In stock (${product.stock})`}
+                    : `✓ In stock`}
               </span>
             </div>
           </motion.div>
@@ -281,7 +282,7 @@ export default function ProductPage() {
       </Row>
       {/* Reviews Section */}
       <Row className="mt-5">
-        <Col lg={8}>
+        <Col lg={6}>
           <h3 className="fw-bold mb-4">Reviews ({reviews.length})</h3>
 
           {/* Add Review Form */}

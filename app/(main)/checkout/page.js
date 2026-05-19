@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Row, Col, Card, Button, Form, Spinner } from "react-bootstrap";
 import { Riple } from "react-loading-indicators";
 import { FiMapPin, FiCreditCard, FiCheck } from "react-icons/fi";
 import api from "@/lib/axios";
@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { IoMdCash } from "react-icons/io";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { LuWallet } from "react-icons/lu";
+import { motion } from "framer-motion";
 
 export default function CheckoutPage() {
   const { user, token, mounted } = useAuth("customer");
@@ -19,13 +20,21 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [step, setStep] = useState(1);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const [form, setForm] = useState({
     street: "",
     city: "",
     country: "Egypt",
     paymentMethod: "cash on delivery",
   });
-
+  useEffect(() => {
+    if (!mounted || !user) return;
+    setForm({
+      street: user.address?.street || "",
+      city: user.address?.city || "",
+      country: user.address?.country || "",
+    });
+  }, [mounted, user]);
   useEffect(() => {
     if (!mounted) return;
     if (!token) return;
@@ -72,6 +81,7 @@ export default function CheckoutPage() {
     ) || 0;
 
   const handlePlaceOrder = async () => {
+    if (orderPlaced) return;
     if (!form.street || !form.city) {
       toast.error("Please fill in your address");
       return;
@@ -87,21 +97,18 @@ export default function CheckoutPage() {
         },
       });
 
-      // if stripe payment
       if (form.paymentMethod === "credit card") {
         const { data: paymentData } = await api.post("/payment/intent", {
           orderId: data.order._id,
         });
-        // redirect to stripe payment page
         router.push(
           `/checkout/payment?clientSecret=${paymentData.clientSecret}&orderId=${data.order._id}`,
         );
         return;
       }
-
       // cash on delivery
       setCart({ items: [] });
-      setStep(3); // show success
+      setStep(3);
       toast.success("Order placed successfully!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");
@@ -113,7 +120,7 @@ export default function CheckoutPage() {
   // Success step
   if (step === 3) {
     return (
-      <Container className="py-5 text-center">
+      <section className="py-5 text-center">
         <div
           style={{
             width: 80,
@@ -147,185 +154,210 @@ export default function CheckoutPage() {
             Continue Shopping
           </Button>
         </div>
-      </Container>
+      </section>
     );
   }
 
   return (
-    <Container className="py-5">
-      <h2 className="fw-bold mb-4">Checkout</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <section className="py-5">
+        <h2 className="fw-bold mb-4">Checkout</h2>
 
-      <Row className="g-4">
-        {/* Left - Form */}
-        <Col lg={7}>
-          {/* Shipping Address */}
-          <Card
-            className="border-0 shadow-sm mb-4"
-            style={{ borderRadius: 12 }}
-          >
-            <Card.Body className="p-4">
-              <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
-                <FiMapPin style={{ color: "var(--primary)" }} /> Shipping
-                Address
-              </h5>
-              <Row className="g-3">
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>Street Address</Form.Label>
-                    <Form.Control
-                      name="street"
-                      value={form.street}
-                      onChange={handleChange}
-                      placeholder="123 Main St, Apt 4"
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>City</Form.Label>
-                    <Form.Control
-                      name="city"
-                      value={form.city}
-                      onChange={handleChange}
-                      placeholder="Cairo"
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Country</Form.Label>
-                    <Form.Control
-                      name="country"
-                      value={form.country}
-                      onChange={handleChange}
-                      placeholder="Egypt"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
+        <Row className="g-4">
+          {/* Left - Form */}
+          <Col lg={7}>
+            {/* Shipping Address */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card
+                className="border-0 shadow-sm mb-4"
+                style={{ borderRadius: 12 }}
+              >
+                <Card.Body className="p-4">
+                  <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <FiMapPin style={{ color: "var(--primary)" }} /> Shipping
+                    Address
+                  </h5>
+                  <Row className="g-3">
+                    <Col md={12}>
+                      <Form.Group>
+                        <Form.Label>Street Address</Form.Label>
+                        <Form.Control
+                          name="street"
+                          value={form.street}
+                          onChange={handleChange}
+                          placeholder="123 Main St, Apt 4"
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>City</Form.Label>
+                        <Form.Control
+                          name="city"
+                          value={form.city}
+                          onChange={handleChange}
+                          placeholder="Cairo"
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Country</Form.Label>
+                        <Form.Control
+                          name="country"
+                          value={form.country}
+                          onChange={handleChange}
+                          placeholder="Egypt"
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </motion.div>
+            {/* Payment Method */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <Card className="border-0 shadow-sm" style={{ borderRadius: 12 }}>
+                <Card.Body className="p-4">
+                  <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <FiCreditCard style={{ color: "var(--primary)" }} /> Payment
+                    Method
+                  </h5>
+                  <Row className="g-3">
+                    {[
+                      {
+                        value: "cash on delivery",
+                        label: " Cash on Delivery",
+                        icon: <IoMdCash size={20} />,
+                      },
+                      {
+                        value: "credit card",
+                        label: " Credit Card ",
+                        icon: <FaRegCreditCard size={20} />,
+                      },
+                      {
+                        value: "wallet",
+                        label: " Wallet",
+                        icon: <LuWallet size={20} />,
+                      },
+                    ].map((method) => (
+                      <Col md={4} key={method.value}>
+                        <div
+                          onClick={() =>
+                            setForm({ ...form, paymentMethod: method.value })
+                          }
+                          style={{
+                            height: "100%",
+                            border: `2px solid ${form.paymentMethod === method.value ? "#2D6A4F" : "#E8E2D9"}`,
+                            borderRadius: 8,
+                            padding: "1rem",
+                            cursor: "pointer",
+                            background:
+                              form.paymentMethod === method.value
+                                ? "#F0FAF4"
+                                : "#fff",
+                            textAlign: "center",
+                            transition: "all 0.2s",
+                          }}
+                        >
+                          <div
+                            className="fw-semibold small d-flex align-items-center justify-content-center gap-2"
+                            style={{ color: "var(--primary)" }}
+                          >
+                            {method.icon} {method.label}
+                          </div>
+                        </div>
+                      </Col>
+                    ))}
+                  </Row>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          </Col>
 
-          {/* Payment Method */}
-          <Card className="border-0 shadow-sm" style={{ borderRadius: 12 }}>
-            <Card.Body className="p-4">
-              <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
-                <FiCreditCard style={{ color: "var(--primary)" }} /> Payment
-                Method
-              </h5>
-              <Row className="g-3">
-                {[
-                  {
-                    value: "cash on delivery",
-                    label: " Cash on Delivery",
-                    icon: <IoMdCash size={20} />,
-                  },
-                  {
-                    value: "credit card",
-                    label: " Credit Card ",
-                    icon: <FaRegCreditCard size={20} />,
-                  },
-                  {
-                    value: "wallet",
-                    label: " Wallet",
-                    icon: <LuWallet size={20} />,
-                  },
-                ].map((method) => (
-                  <Col md={4} key={method.value}>
-                    <div
-                      onClick={() =>
-                        setForm({ ...form, paymentMethod: method.value })
-                      }
-                      style={{
-                        height: "100%",
-                        border: `2px solid ${form.paymentMethod === method.value ? "#2D6A4F" : "#E8E2D9"}`,
-                        borderRadius: 8,
-                        padding: "1rem",
-                        cursor: "pointer",
-                        background:
-                          form.paymentMethod === method.value
-                            ? "#F0FAF4"
-                            : "#fff",
-                        textAlign: "center",
-                        transition: "all 0.2s",
-                      }}
-                    >
+          {/* Right - Order Summary */}
+          <Col lg={5}>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <Card className="border-0 shadow-lg" style={{ borderRadius: 12 }}>
+                <Card.Body className="p-4">
+                  <h5 className="fw-bold mb-4">Order Summary</h5>
+
+                  {/* Items */}
+                  <div className="mb-3">
+                    {cart?.items?.map((item) => (
                       <div
-                        className="fw-semibold small d-flex align-items-center justify-content-center gap-2"
-                        style={{ color: "var(--primary)" }}
+                        key={item._id}
+                        className="d-flex justify-content-between mb-2"
                       >
-                        {method.icon} {method.label}
+                        <span className=" small">
+                          {item.product?.name} × {item.quantity}
+                        </span>
+                        <span className="small fw-semibold">
+                          EGP {(item.product?.price * item.quantity).toFixed(2)}
+                        </span>
                       </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
+                    ))}
+                  </div>
 
-        {/* Right - Order Summary */}
-        <Col lg={5}>
-          <Card className="border-0 shadow-lg" style={{ borderRadius: 12 }}>
-            <Card.Body className="p-4">
-              <h5 className="fw-bold mb-4">Order Summary</h5>
+                  <hr />
 
-              {/* Items */}
-              <div className="mb-3">
-                {cart?.items?.map((item) => (
-                  <div
-                    key={item._id}
-                    className="d-flex justify-content-between mb-2"
-                  >
-                    <span className=" small">
-                      {item.product?.name} × {item.quantity}
-                    </span>
-                    <span className="small fw-semibold">
-                      EGP {(item.product?.price * item.quantity).toFixed(2)}
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span className="fw-semibold">
+                      EGP {totalPrice.toFixed(2)}
                     </span>
                   </div>
-                ))}
-              </div>
+                  <div className="d-flex justify-content-between mb-3">
+                    <span>Shipping</span>
+                    <span className=" fw-semibold">Free</span>
+                  </div>
 
-              <hr />
+                  <hr />
 
-              <div className="d-flex justify-content-between mb-2">
-                <span>Subtotal</span>
-                <span className="fw-semibold">EGP {totalPrice.toFixed(2)}</span>
-              </div>
-              <div className="d-flex justify-content-between mb-3">
-                <span>Shipping</span>
-                <span className=" fw-semibold">Free</span>
-              </div>
+                  <div className="d-flex justify-content-between mb-4">
+                    <span className="fw-bold fs-5">Total</span>
+                    <span className="fw-bold  fs-5">
+                      EGP {totalPrice.toFixed(2)}
+                    </span>
+                  </div>
 
-              <hr />
-
-              <div className="d-flex justify-content-between mb-4">
-                <span className="fw-bold fs-5">Total</span>
-                <span className="fw-bold  fs-5">
-                  EGP {totalPrice.toFixed(2)}
-                </span>
-              </div>
-
-              <Button
-                className="w-100 rounded-pill py-2 fw-bold"
-                onClick={handlePlaceOrder}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Spinner size="sm" className="me-2" /> Placing order...
-                  </>
-                ) : (
-                  "Place Order"
-                )}
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                  <Button
+                    className="w-100 rounded-pill py-2 fw-bold"
+                    onClick={handlePlaceOrder}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner size="sm" className="me-2" /> Placing order...
+                      </>
+                    ) : (
+                      "Place Order"
+                    )}
+                  </Button>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
+      </section>
+    </motion.div>
   );
 }

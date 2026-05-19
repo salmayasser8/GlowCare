@@ -15,7 +15,10 @@ export const toggleUserStatus = async (req, { id }) => {
     await user.save();
 
     return Response.json(
-      { message: `User ${user.isActive ? "activated" : "deactivated"}`, user },
+      {
+        message: `${user.name} ${user.isActive ? "activated" : "deactivated"}`,
+        user,
+      },
       { status: 200 },
     );
   } catch (err) {

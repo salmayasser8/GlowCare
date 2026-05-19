@@ -14,7 +14,7 @@ import {
 import toast from "react-hot-toast";
 import api from "@/lib/axios";
 import { useCartStore } from "@/store/cartStore";
-
+import { motion } from "framer-motion";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 );
@@ -45,6 +45,7 @@ function PaymentForm({ clientSecret, orderId }) {
         return;
       }
       if (paymentIntent.status === "succeeded") {
+        await api.delete("/cart");
         setCart({ items: [] });
         toast.success("Payment successful! 🎉");
         router.push("/orders");
@@ -110,20 +111,27 @@ export default function PaymentPage() {
     <section className="py-5">
       <div style={{ maxWidth: 500, margin: "0 auto" }}>
         <h2 className="fw-bold mb-4 text-center">Complete Payment</h2>
-        <Card className="border-0 shadow-lg" style={{ borderRadius: 12 }}>
-          <Card.Body className="p-4">
-            <div className="text-center mb-4">
-              <BsCreditCardFill size={50} color="var(--primary)" />
-              <p className=" small mt-2">Your payment is secured by Stripe</p>
-            </div>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <PaymentForm clientSecret={clientSecret} orderId={orderId} />
-            </Elements>
-            <p className=" small mt-3 d-flex align-items-center gap-2 justify-content-center">
-              <FaLock color="var(--primary)" /> 256-bit SSL encryption
-            </p>
-          </Card.Body>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Card className="border-0 shadow-lg" style={{ borderRadius: 12 }}>
+            <Card.Body className="p-4">
+              <div className="text-center mb-4">
+                <BsCreditCardFill size={50} color="var(--primary)" />
+                <p className=" small mt-2">Your payment is secured by Stripe</p>
+              </div>
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <PaymentForm clientSecret={clientSecret} orderId={orderId} />
+              </Elements>
+              <p className=" small mt-3 d-flex align-items-center gap-2 justify-content-center">
+                <FaLock color="var(--primary)" /> 256-bit SSL encryption
+              </p>
+            </Card.Body>
+          </Card>
+        </motion.div>
       </div>
     </section>
   );

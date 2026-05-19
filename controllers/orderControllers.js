@@ -2,6 +2,7 @@ import Order from "@/models/order";
 import connectDB from "@/lib/mongodb";
 import authMiddleware from "@/middlewares/authMw";
 import HttpError from "@/utils/httpError";
+import User from "@/models/user";
 import Cart from "@/models/cart";
 import Product from "@/models/product";
 import { sendOrderConfirmationEmail } from "@/utils/sendEmail";
@@ -30,11 +31,6 @@ export const placeOrder = async (req) => {
         price: item.product.price,
       };
     });
-    for (const item of cart.items) {
-      await Product.findByIdAndUpdate(item.product._id, {
-        $inc: { stock: -item.quantity },
-      });
-    }
     const order = await Order.create({
       user: currentUser._id,
       items,
@@ -42,11 +38,29 @@ export const placeOrder = async (req) => {
       shippingAddress,
       paymentMethod,
     });
-    await Cart.findOneAndDelete({ user: currentUser._id });
-    try {
-      await sendOrderConfirmationEmail(currentUser.email, order);
-    } catch (emailErr) {
-      console.error("Failed to send order confirmation email:", emailErr);
+    await User.findByIdAndUpdate(currentUser._id, {
+      address: {
+        street: shippingAddress.street,
+        city: shippingAddress.city,
+        country: shippingAddress.country,
+      },
+    });
+    const populatedOrder = await Order.findById(order._id).populate(
+      "items.product",
+      "name price",
+    );
+    if (paymentMethod !== "credit card") {
+      for (const item of cart.items) {
+        await Product.findByIdAndUpdate(item.product._id, {
+          $inc: { stock: -item.quantity },
+        });
+      }
+      await Cart.findOneAndDelete({ user: currentUser._id });
+      try {
+        await sendOrderConfirmationEmail(currentUser.email, populatedOrder);
+      } catch (emailErr) {
+        console.error("Failed to send order confirmation email:", emailErr);
+      }
     }
     return Response.json(
       { message: "Order placed successfully", order },

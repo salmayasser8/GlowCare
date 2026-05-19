@@ -47,7 +47,7 @@ const ProductCard = ({
               >
                 <Link
                   href={`/products/${product._id}`}
-                  className="text-decoration-none"
+                  style={{ display: "block", width: "100%", height: "100%" }}
                 >
                   {product.image ? (
                     <img
@@ -67,7 +67,7 @@ const ProductCard = ({
               <Card.Body className="d-flex flex-column">
                 <Card.Title
                   className="fs-6 "
-                  style={{ color: "var(--primary)" }}
+                  style={{ color: "var(--primary)", minHeight: "4rem" }}
                 >
                   {product.name}
                 </Card.Title>

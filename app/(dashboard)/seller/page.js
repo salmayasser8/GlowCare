@@ -9,6 +9,7 @@ import {
   FiPackage,
   FiAlertTriangle,
   FiCheckCircle,
+  FiRefreshCw,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import api from "@/lib/axios";
@@ -42,19 +43,14 @@ export default function Seller() {
 
   const fetchMyProducts = async () => {
     try {
-      const { data } = await api.get("/products");
-      // filter only seller's own products
-      const myProducts = data.products.filter(
-        (p) => p.seller?._id === user?._id || p.seller === user?._id,
-      );
-      setProducts(myProducts);
+      const { data } = await api.get("/seller/products");
+      setProducts(data.products);
     } catch (err) {
       toast.error("Failed to load products");
     } finally {
       setLoading(false);
     }
   };
-
   const fetchCategories = async () => {
     try {
       const { data } = await api.get("/category");
@@ -108,16 +104,47 @@ export default function Seller() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this product?")) return;
+    toast(
+      (t) => (
+        <div className="text-center px-2">
+          <p className="mb-2 fw-semibold">Delete this product?</p>
+          <div className="d-flex gap-2 justify-content-center">
+            <button
+              className=" rounded-pill px-3 py-2"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await api.delete(`/products/${id}`);
+                  toast.success("Product deleted!");
+                  fetchMyProducts();
+                } catch (err) {
+                  toast.error("Failed to delete");
+                }
+              }}
+            >
+              Yes, Delete
+            </button>
+            <button
+              className="rounded-pill px-3 py-2"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity },
+    );
+  };
+  const handleRestore = async (id) => {
     try {
-      await api.delete(`/products/${id}`);
-      toast.success("Product deleted!");
+      await api.put(`/products/${id}`, { isActive: true });
+      toast.success("Product restored!");
       fetchMyProducts();
     } catch (err) {
-      toast.error("Failed to delete");
+      toast.error("Failed to restore");
     }
   };
-
   const openAddModal = () => {
     setEditProduct(null);
     setForm({
@@ -210,57 +237,6 @@ export default function Seller() {
           </Col>
         ))}
       </Row>
-      {/* <Col md={4}> */}
-      {/* <Card
-            className="border-0 shadow-sm text-center p-3 "
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-4px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
-          >
-            <FiAlertTriangle
-              size={24}
-              color="var(--primary)"
-              className="mx-auto mb-2"
-            />
-            <h4
-              className="fw-bold"
-              style={{
-                color:
-                  products.filter((p) => p.stock < 5).length > 0
-                    ? "red"
-                    : "var(--primary)",
-              }}
-            >
-              {products.filter((p) => p.stock < 5).length}
-            </h4>
-            <p className="text-muted small mb-0">Low Stock</p>
-          </Card>
-        </Col>
-        <Col md={4}>
-          <Card
-            className="border-0 shadow-sm text-center p-3 "
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-4px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
-          >
-            <FiCheckCircle
-              size={24}
-              color="var(--primary)"
-              className="mx-auto mb-2"
-            />
-            <h4 className="fw-bold ">
-              {products.filter((p) => p.isActive).length}
-            </h4>
-            <p className=" small mb-0">Active Products</p>
-          </Card>
-        </Col> */}
-
       {/* Products Table */}
       {loading ? (
         <div className="text-center py-5">
@@ -343,6 +319,7 @@ export default function Seller() {
                       <td className="py-3 fw-semibold">EGP {product.price}</td>
                       <td className="py-3">
                         <span
+                          className="stock"
                           style={{
                             color:
                               product.stock === 0
@@ -357,12 +334,16 @@ export default function Seller() {
                         </span>
                       </td>
                       <td className="py-3">
-                        <Badge
-                          bg={product.isActive ? "success" : "secondary"}
-                          className="rounded-pill p-2 "
+                        <span
+                          style={{
+                            backgroundColor: product.isActive
+                              ? "var(--primary)"
+                              : "#9B0F06",
+                          }}
+                          className="badge status rounded-pill p-2"
                         >
                           {product.isActive ? "Active" : "Hidden"}
-                        </Badge>
+                        </span>
                       </td>
                       <td className="py-3">
                         <div className="d-flex  justify-content-center  align-items-center gap-2">
@@ -374,15 +355,27 @@ export default function Seller() {
                               color: "var(--bg-primary)",
                             }}
                           />
-                          <FiTrash
-                            size={20}
-                            onClick={() => handleDelete(product._id)}
-                            style={{
-                              cursor: "pointer",
-                              color: "var(--bg-primary)",
-                            }}
-                          />
-                          {/* </Button> */}
+                          {product.isActive ? (
+                            // show delete icon if active
+                            <FiTrash
+                              size={20}
+                              onClick={() => handleDelete(product._id)}
+                              style={{
+                                cursor: "pointer",
+                                color: "var(--bg-primary)",
+                              }}
+                            />
+                          ) : (
+                            // show restore icon if hidden
+                            <FiRefreshCw
+                              size={20}
+                              onClick={() => handleRestore(product._id)}
+                              style={{
+                                cursor: "pointer",
+                                color: "var(--bg-primary)",
+                              }}
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -493,6 +486,7 @@ export default function Seller() {
               <Col md={12}>
                 <Form.Check
                   type="checkbox"
+                  id="featured-checkbox"
                   label="Feature this product on homepage"
                   name="isFeatured"
                   checked={form.isFeatured}

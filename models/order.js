@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["cash on delivery", "credit card", "wallet", "paypal"],
       required: true,
-    },
+    }, 
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],

@@ -73,11 +73,11 @@ export default function NavBar() {
           <Nav.Link as={Link} href="#about">
             About Us
           </Nav.Link>
-          {user?.role === "seller" && (
+          {/* {user?.role === "seller" && (
             <Nav.Link as={Link} href="/seller">
               Dashboard
             </Nav.Link>
-          )}
+          )} */}
           {user?.role === "admin" && (
             <Nav.Link as={Link} href="/admin">
               Admin Panel

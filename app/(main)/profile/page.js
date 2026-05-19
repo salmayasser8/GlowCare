@@ -138,6 +138,7 @@ export default function ProfilePage() {
                             value={form.name}
                             onChange={handleChange}
                             placeholder="Your name"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -149,6 +150,7 @@ export default function ProfilePage() {
                             value={form.phone}
                             onChange={handleChange}
                             placeholder="01xxxxxxxxx"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -160,6 +162,7 @@ export default function ProfilePage() {
                             value={form.street}
                             onChange={handleChange}
                             placeholder="123 Main St"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -171,6 +174,7 @@ export default function ProfilePage() {
                             value={form.city}
                             onChange={handleChange}
                             placeholder="Cairo"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -182,6 +186,7 @@ export default function ProfilePage() {
                             value={form.country}
                             onChange={handleChange}
                             placeholder="Egypt"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -192,7 +197,9 @@ export default function ProfilePage() {
                       disabled={loading}
                     >
                       {loading ? (
-                        <Spinner size="sm" />
+                        <>
+                          <Spinner size="sm" /> Saving Changes...
+                        </>
                       ) : (
                         <>
                           <FiSave className="me-2" />
@@ -226,6 +233,7 @@ export default function ProfilePage() {
                             value={passwordForm.oldPassword}
                             onChange={handlePasswordChange}
                             placeholder="Enter current password"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -238,6 +246,7 @@ export default function ProfilePage() {
                             value={passwordForm.newPassword}
                             onChange={handlePasswordChange}
                             placeholder="Min. 8 characters"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -250,6 +259,7 @@ export default function ProfilePage() {
                             value={passwordForm.confirmPassword}
                             onChange={handlePasswordChange}
                             placeholder="Repeat new password"
+                            required
                           />
                         </Form.Group>
                       </Col>
@@ -260,7 +270,9 @@ export default function ProfilePage() {
                       disabled={passwordLoading}
                     >
                       {passwordLoading ? (
-                        <Spinner size="sm" />
+                        <>
+                          <Spinner size="sm" /> Changing Password...
+                        </>
                       ) : (
                         <>Change Password</>
                       )}
@@ -299,7 +311,7 @@ export default function ProfilePage() {
                 </div>
                 <h5 className="fw-bold">{user?.name}</h5>
                 <p className="text-muted small">{user?.email}</p>
-                <Badge className="rounded-pill px-3 py-2 text-capitalize w-50 mx-auto">
+                <Badge className="rounded-pill p-2 text-capitalize w-50 mx-auto fs-6">
                   {user?.role}
                 </Badge>
                 <hr />

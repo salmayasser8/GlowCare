@@ -14,7 +14,7 @@ const FeaturedProducts = ({
   const { user } = useAuthStore();
   return (
     <section className="py-5">
-      <div className="d-flex   justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className=" mb-0 ">Best Sellers</h2>
         <Link href="/products" className="text-success text-decoration-none ">
           View all <FiArrowRight />

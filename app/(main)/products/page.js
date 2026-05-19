@@ -29,7 +29,7 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const [wishlist, setWishlist] = useState(new Set());
   const [initialized, setInitialized] = useState(false);
-
+  const [filtering, setFiltering] = useState(false);
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     if (categoryFromUrl) setSelectedCategory(categoryFromUrl);
@@ -92,7 +92,11 @@ export default function ProductsPage() {
   };
 
   const fetchProducts = async () => {
-    setLoading(true);
+    if (products.length === 0) {
+      setLoading(true);
+    } else {
+      setFiltering(true);
+    }
     try {
       let url = "/products?";
       if (search) url += `search=${search}&`;

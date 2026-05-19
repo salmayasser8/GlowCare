@@ -50,14 +50,37 @@ export default function CartPage() {
   };
 
   const handleClearCart = async () => {
-    if (!confirm("Clear entire cart?")) return;
-    try {
-      await api.delete("/cart");
-      setCart({ items: [] });
-      toast.success("Cart cleared!");
-    } catch (err) {
-      toast.error("Something went wrong");
-    }
+    toast(
+      (t) => (
+        <div className="text-center px-2">
+          <p className="mb-3 fw-semibold">Clear entire cart?</p>
+          <div className="d-flex gap-2 justify-content-center">
+            <button
+              className=" rounded-pill px-3 py-2"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await api.delete("/cart");
+                  setCart({ items: [] });
+                  toast.success("Cart cleared!");
+                } catch (err) {
+                  toast.error("Something went wrong");
+                }
+              }}
+            >
+              Yes, Clear
+            </button>
+            <button
+              className=" rounded-pill px-3 py-2"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity },
+    );
   };
 
   const totalPrice =
@@ -111,113 +134,108 @@ export default function CartPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 exit={{ opacity: 0, x: 20 }}
+                className="mb-3"
               >
                 <Card className="border-0 shadow-sm">
                   <Card.Body className="p-0">
-                    {cart?.items?.map((item) => (
+                    <div
+                      key={item.product?._id}
+                      className="d-flex align-items-center gap-3 p-3 border-bottom"
+                    >
+                      {/* Product Image */}
                       <div
-                        key={item.product?._id}
-                        className="d-flex align-items-center gap-3 p-3 border-bottom"
+                        style={{
+                          width: 80,
+                          height: 80,
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        {/* Product Image */}
-                        <div
-                          style={{
-                            width: 80,
-                            height: 80,
-                            borderRadius: 8,
-                            // background: "#F0FAF4",
-                            overflow: "hidden",
-                            flexShrink: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {item.product?.image ? (
-                            <img
-                              src={item.product.image}
-                              alt={item.product.name}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
-                            />
-                          ) : (
-                            <span style={{ fontSize: "2rem" }}>🧴</span>
-                          )}
-                        </div>
+                        {item.product?.image ? (
+                          <img
+                            src={item.product.image}
+                            alt={item.product.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: "2rem" }}>🧴</span>
+                        )}
+                      </div>
 
-                        {/* Product Info */}
-                        <div className="flex-grow-1">
-                          <h6 className="fw-semibold mb-1">
-                            {item.product?.name}
-                          </h6>
-                          <p className=" small mb-2">
-                            EGP {item.product?.price}
-                          </p>
-                          {/* Quantity Controls */}
-                          <div className="d-flex align-items-center gap-2">
-                            <Button
-                              size="lg"
-                              className="rounded-circle p-1"
-                              style={{
-                                width: 28,
-                                height: 28,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                              onClick={() =>
-                                handleUpdateQuantity(
-                                  item.product?._id,
-                                  item.quantity - 1,
-                                )
-                              }
-                            >
-                              {item.quantity === 1 ? <FiTrash /> : <FiMinus />}
-                            </Button>
-                            <span
-                              className="fw-bold px-2"
-                              style={{ color: "var(--primary)" }}
-                            >
-                              {item.quantity}
-                            </span>
-                            <Button
-                              size="lg"
-                              variant="outline-secondary"
-                              className="rounded-circle p-1 "
-                              style={{
-                                width: 28,
-                                height: 28,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                              onClick={() =>
-                                handleUpdateQuantity(
-                                  item.product?._id,
-                                  item.quantity + 1,
-                                )
-                              }
-                            >
-                              <FiPlus />
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Price + Remove */}
-                        <div className="d-flex flex-column align-items-center ">
-                          <div
-                            className="fw-bold mb-4"
+                      {/* Product Info */}
+                      <div className="flex-grow-1">
+                        <h6 className="fw-semibold mb-1">
+                          {item.product?.name}
+                        </h6>
+                        <p className=" small mb-2">EGP {item.product?.price}</p>
+                        {/* Quantity Controls */}
+                        <div className="d-flex align-items-center gap-2">
+                          <Button
+                            size="lg"
+                            className="rounded-circle p-1"
+                            style={{
+                              width: 28,
+                              height: 28,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.product?._id,
+                                item.quantity - 1,
+                              )
+                            }
+                          >
+                            {item.quantity === 1 ? <FiTrash /> : <FiMinus />}
+                          </Button>
+                          <span
+                            className="fw-bold px-2"
                             style={{ color: "var(--primary)" }}
                           >
-                            EGP{" "}
-                            {(item.product?.price * item.quantity).toFixed(2)}
-                          </div>
+                            {item.quantity}
+                          </span>
+                          <Button
+                            size="lg"
+                            variant="outline-secondary"
+                            className="rounded-circle p-1 "
+                            style={{
+                              width: 28,
+                              height: 28,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.product?._id,
+                                item.quantity + 1,
+                              )
+                            }
+                          >
+                            <FiPlus />
+                          </Button>
                         </div>
                       </div>
-                    ))}
+
+                      {/* Price + Remove */}
+                      <div className="d-flex flex-column align-items-center ">
+                        <div
+                          className="fw-bold mb-4"
+                          style={{ color: "var(--primary)" }}
+                        >
+                          EGP {(item.product?.price * item.quantity).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
                   </Card.Body>
                 </Card>
               </motion.div>

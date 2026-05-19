@@ -8,6 +8,7 @@ import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import { FaShoppingBag, FaStore } from "react-icons/fa";
 import { RoleButton } from "@/app/components/roleButton";
+import { motion } from "framer-motion";
 export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -77,117 +78,124 @@ export default function RegisterPage() {
     <div className="container">
       <div className="row justify-content-center align-items-center min-vh-100">
         <div className=" col-md-8 col-lg-6">
-          <Card>
-            <Card.Body>
-              <h2 className="text-center mb-3">Welcome to GlowCare</h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3 w-75 mx-auto ">
-                  <div className="d-flex gap-3">
-                    <RoleButton
-                      value="customer"
-                      label="Customer"
-                      Icon={FaShoppingBag}
-                      form={form}
-                      setForm={setForm}
-                      required
-                    />
-                    <RoleButton
-                      value="seller"
-                      label="Seller"
-                      Icon={FaStore}
-                      form={form}
-                      setForm={setForm}
-                      required
-                    />
-                  </div>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="tel"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="Enter your phone number"
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <div className="position-relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <Card>
+              <Card.Body>
+                <h2 className="text-center mb-3">Welcome to GlowCare</h2>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3 w-75 mx-auto ">
+                    <div className="d-flex gap-3">
+                      <RoleButton
+                        value="customer"
+                        label="Customer"
+                        Icon={FaShoppingBag}
+                        form={form}
+                        setForm={setForm}
+                        required
+                      />
+                      <RoleButton
+                        value="seller"
+                        label="Seller"
+                        Icon={FaStore}
+                        form={form}
+                        setForm={setForm}
+                        required
+                      />
+                    </div>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
                     <Form.Control
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={form.password}
+                      type="text"
+                      name="name"
+                      value={form.name}
                       onChange={handleChange}
-                      placeholder="Enter your password"
+                      placeholder="Enter your full name"
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className=" eye position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent pe-3"
-                    >
-                      {showPassword ? (
-                        <FiEyeOff color="var(--primary)" />
-                      ) : (
-                        <FiEye color="var(--primary)" />
-                      )}
-                    </button>
-                  </div>
-                </Form.Group>
+                  </Form.Group>
 
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="password"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm your password"
-                    required
-                  />
-                </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Control
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </Form.Group>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="fw-bold w-50 mx-auto d-block rounded-pill p-2"
-                >
-                  {loading ? (
-                    <>
-                      <Spinner size="sm" /> Creating account...
-                    </>
-                  ) : (
-                    "Sign Up"
-                  )}
-                </Button>
-              </Form>
+                  <Form.Group className="mb-3">
+                    <Form.Control
+                      type="tel"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      placeholder="Enter your phone number"
+                    />
+                  </Form.Group>
 
-              <p className="mt-3 text-center">
-                Already have an account? <Link href="/login">Sign in</Link>
-              </p>
-            </Card.Body>
-          </Card>
+                  <Form.Group className="mb-3">
+                    <div className="position-relative">
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="Enter your password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className=" eye position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent pe-3"
+                      >
+                        {showPassword ? (
+                          <FiEyeOff color="var(--primary)" />
+                        ) : (
+                          <FiEye color="var(--primary)" />
+                        )}
+                      </button>
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Control
+                      type="password"
+                      name="confirmPassword"
+                      value={form.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="Confirm your password"
+                      required
+                    />
+                  </Form.Group>
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="fw-bold w-50 mx-auto d-block rounded-pill p-2"
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner size="sm" /> Creating account...
+                      </>
+                    ) : (
+                      "Sign Up"
+                    )}
+                  </Button>
+                </Form>
+
+                <p className="mt-3 text-center">
+                  Already have an account? <Link href="/login">Sign in</Link>
+                </p>
+              </Card.Body>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

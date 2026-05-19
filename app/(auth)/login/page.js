@@ -7,17 +7,21 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 import toast from "react-hot-toast";
-
+import { motion } from "framer-motion";
 export default function LoginPage() {
   const router = useRouter();
   const { setToken, setUser } = useAuthStore();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    // setError("");
+    const { name, value, type, checked } = e.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleSubmit = async (e) => {
@@ -25,6 +29,11 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { data } = await api.post("/auth/login", form);
+      if (form.rememberMe) {
+        localStorage.setItem("token", data.accessToken);
+      } else {
+        sessionStorage.setItem("token", data.accessToken);
+      }
       setToken(data.accessToken);
       setUser(data.user);
       toast.success(`Welcome, ${data.user.name}!`);
@@ -44,65 +53,81 @@ export default function LoginPage() {
     <div className="container">
       <div className="row justify-content-center align-items-center min-vh-100">
         <div className=" col-md-8 col-lg-5">
-          <Card>
-            <Card.Body>
-              <h2 className="text-center mb-3">Hello,Welcome Back</h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3 ">
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Enter Your Email"
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <div className="position-relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <Card>
+              <Card.Body>
+                <h2 className="text-center mb-3">Hello,Welcome Back</h2>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3 ">
                     <Form.Control
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={form.password}
+                      type="email"
+                      name="email"
+                      value={form.email}
                       onChange={handleChange}
-                      placeholder="Enter Your Password"
+                      placeholder="Enter Your Email"
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className=" eye position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent pe-3"
-                    >
-                      {showPassword ? (
-                        <FiEyeOff color="var(--primary)" />
-                      ) : (
-                        <FiEye color="var(--primary)" />
-                      )}
-                    </button>
-                  </div>
-                </Form.Group>
+                  </Form.Group>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className=" fw-bold w-50 mx-auto d-block rounded-pill p-2 "
-                >
-                  {loading ? (
-                    <>
-                      <Spinner size="sm" /> Signing in...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-              </Form>
+                  <Form.Group className="mb-3">
+                    <div className="position-relative">
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="Enter Your Password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className=" eye position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent pe-3"
+                      >
+                        {showPassword ? (
+                          <FiEyeOff color="var(--primary)" />
+                        ) : (
+                          <FiEye color="var(--primary)" />
+                        )}
+                      </button>
+                    </div>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Check
+                      type="checkbox"
+                      id="rememberMe"
+                      label="Remember me"
+                      name="rememberMe"
+                      checked={form.rememberMe}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className=" fw-bold w-50 mx-auto d-block rounded-pill p-2 "
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner size="sm" /> Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
+                  </Button>
+                </Form>
 
-              <p className="mt-3 text-center">
-                Don't have an account? <Link href="/register">Sign Up</Link>
-              </p>
-            </Card.Body>
-          </Card>
+                <p className="mt-3 text-center">
+                  Don't have an account? <Link href="/register">Sign Up</Link>
+                </p>
+              </Card.Body>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

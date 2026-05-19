@@ -19,7 +19,7 @@ const Categories = ({ categories, id }) => {
           <h5 className="fw-bold mb-0">{label}</h5>
           <Link
             href={`/products?type=${type}`}
-            className="text-success text-decoration-none small fw-bold"
+            className="text-success text-decoration-none  "
           >
             View all <FiArrowRight size={13} />
           </Link>
@@ -28,11 +28,10 @@ const Categories = ({ categories, id }) => {
           {items.map((cat, index) => (
             <Col key={cat._id} xs={6} md={3}>
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                // ↑ each card animates 0.1s after the previous one
+                transition={{ duration: 0.8, delay: index * 0.2 }}
               >
                 <Link
                   href={`/products?category=${cat._id}`}

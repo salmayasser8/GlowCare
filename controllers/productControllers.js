@@ -152,3 +152,20 @@ export const getFeaturedProducts = async () => {
     );
   }
 };
+
+export const getMyProducts = async (req) => {
+  try {
+    await connectDB();
+    const currentUser = await authMiddleware(req);
+    const products = await Product.find({ seller: currentUser._id }).populate(
+      "category",
+      "name",
+    );
+    return Response.json({ products }, { status: 200 });
+  } catch (err) {
+    return Response.json(
+      { message: err.message },
+      { status: err.status || 500 },
+    );
+  }
+};
