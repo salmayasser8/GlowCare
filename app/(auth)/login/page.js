@@ -123,7 +123,8 @@ export default function LoginPage() {
                 </Form>
 
                 <p className="mt-3 text-center">
-                  Don't have an account? <Link href="/register">Sign Up</Link>
+                  {"Don't have an account?"}{" "}
+                  <Link href="/register">Sign Up</Link>
                 </p>
               </Card.Body>
             </Card>
