@@ -4,7 +4,8 @@ import authMiddleware from "@/middlewares/authMw";
 import HttpError from "@/utils/httpError";
 import User from "@/models/user";
 import { checkAdmin } from "@/utils/checkRole";
-export const toggleUserStatus = async (req, { id }) => {
+export const toggleUserStatus = async (req, params) => {
+  const { id } = params;
   try {
     await connectDB();
     const currentUser = await authMiddleware(req);
