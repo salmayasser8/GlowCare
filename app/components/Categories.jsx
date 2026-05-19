@@ -6,7 +6,18 @@ import { FiArrowRight } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 const Categories = ({ categories, id }) => {
-  if (!categories.length) return null;
+  if (!categories.length) {
+    return (
+      <section className="py-5">
+        <div className="text-center mb-4">
+          <h2 className="fw-bold mb-0">Shop by Category</h2>
+        </div>
+        <div className="text-center py-5">
+          <p>No categories yet. Check back soon!</p>
+        </div>
+      </section>
+    );
+  }
 
   const skinCats = categories.filter((c) => c.type === "skin");
   const hairCats = categories.filter((c) => c.type === "hair");
