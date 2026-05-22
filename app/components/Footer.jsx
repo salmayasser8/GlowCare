@@ -163,7 +163,7 @@ export default function Footer() {
 
       <hr className="border-secondary mt-4" />
 
-      <div className="row align-items-center">
+      <div className="row align-items-center text-center">
         <div className="col-md-6">
           <p className="small mb-0">© 2025 GlowCare. All rights reserved.</p>
         </div>
