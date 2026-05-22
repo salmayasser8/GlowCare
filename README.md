@@ -6,7 +6,7 @@ A full-stack e-commerce web application built with **Next.js 14** (App Router), 
 
 ## 🚀 Live Demo
 
-> Coming soon after deployment on Vercel
+https://github.com/salmayasser8/GlowCare
 
 ---
 
